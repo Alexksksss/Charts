@@ -38,6 +38,20 @@ Widget::Widget(QWidget *parent) :
     fileModel->setRootPath(""); // Установка корневого пути для модели
     treeView->setModel(fileModel.get());
 
+    // Установка размеров столбцов
+    QHeaderView *header = treeView->header();
+    header->setSectionResizeMode(0, QHeaderView::Interactive);
+    header->resizeSection(0, 150); // (название)
+
+    header->setSectionResizeMode(1, QHeaderView::Interactive);
+    header->resizeSection(1, 70); // (размер)
+
+    header->setSectionResizeMode(2, QHeaderView::Interactive);
+    header->resizeSection(2, 70); // (тип)
+
+    header->setSectionResizeMode(3, QHeaderView::Interactive);
+    header->resizeSection(3, 50); // (дата изменения)
+
 }
 Widget::~Widget()
 {
