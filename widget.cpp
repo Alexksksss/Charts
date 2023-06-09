@@ -8,7 +8,7 @@
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget),
-    treeView(new QTreeView(this)),
+    treeView(new QTreeView(this)),//при создании экземляра  они управляются родительским виджетом, поэтому не нужно умные указатели сипользовать
     fileModel(new QFileSystemModel(this))
 {
     ui->setupUi(this);
@@ -20,14 +20,15 @@ Widget::Widget(QWidget *parent) :
     QWidget *leftWidget = new QWidget(this);
     QVBoxLayout *leftLayout = new QVBoxLayout(leftWidget);
 
-    QPushButton *openButton = new QPushButton("Открыть", this);
+    openButton = std::unique_ptr<QPushButton>(new QPushButton("Открыть", this));
     openButton->setFixedSize(100, 30);
 
-    connect(openButton, &QPushButton::clicked, this, &Widget::openFolder);
-    leftLayout->addWidget(openButton);
+    connect(openButton.get(), &QPushButton::clicked, this, &Widget::openFolder);
+    leftLayout->addWidget(openButton.get());
 
     leftLayout->addWidget(treeView.get());
     splitter->addWidget(leftWidget);
+
 
     QWidget *rightWidget = new QWidget(this);
     QVBoxLayout *rightLayout = new QVBoxLayout(rightWidget);

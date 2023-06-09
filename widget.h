@@ -6,6 +6,7 @@
 #include <QTreeView>
 #include <QFileSystemModel>
 #include <QSplitter>
+#include <QPushButton>
 
 namespace Ui {
 class Widget;
@@ -26,6 +27,7 @@ private:
     std::unique_ptr<Ui::Widget> ui;
     std::unique_ptr<QTreeView> treeView;//Файлы в виде дерева
     std::unique_ptr<QFileSystemModel> fileModel;//Модель для представления файлов
+    std::unique_ptr<QPushButton> openButton;//кнопка открыть
 };
 
 #endif // WIDGET_H
