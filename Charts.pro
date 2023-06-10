@@ -29,12 +29,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         widget.cpp \
-    filereader.cpp
+    filereader.cpp \
+    chart.cpp
 
 HEADERS += \
         widget.h \
     filereader.h \
-    ioc.h
+    ioc.h \
+    chart.h
 
 FORMS += \
         widget.ui

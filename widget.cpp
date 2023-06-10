@@ -7,6 +7,7 @@
 #include <iostream>
 #include <QMessageBox>
 #include <QHeaderView>
+#include <QComboBox>
 
 
 Widget::Widget(QWidget *parent) :
@@ -18,27 +19,47 @@ Widget::Widget(QWidget *parent) :
     jsonFileReader(new JsonFileReader()) // Добавлено инициализация объекта json
 {
     ui->setupUi(this);
-    resize(800, 600);
+    resize(800, 300);
     QVBoxLayout *layout = new QVBoxLayout(this);
+
+    QWidget *topWidget = new QWidget(this);
+    QHBoxLayout *topLayout = new QHBoxLayout(topWidget);
+
+    openButton = std::unique_ptr<QPushButton>(new QPushButton("Открыть", this));
+    openButton->setFixedSize(100, 30);
+
+    labelType = std::unique_ptr<QLabel>(new QLabel("Тип диаграммы", this));// Создание QLabel с текстом "Текст"
+
+    checkBox = std::unique_ptr<QCheckBox>(new QCheckBox("ЧБ", this));
+
+    comboBoxType = std::unique_ptr<QComboBox>(new QComboBox(this));
+    comboBoxType->addItem("Круговая");
+    comboBoxType->addItem("Столбчатая");
+
+    printButton = std::unique_ptr<QPushButton>(new QPushButton("Печать", this));
+
+    topLayout->addWidget(openButton.get());
+    topLayout->addWidget(labelType.get(), Qt::AlignLeft);
+    topLayout->addWidget(comboBoxType.get(), Qt::AlignLeft);
+    topLayout->addWidget(checkBox.get(), Qt::AlignLeft);
+    topLayout->addWidget(printButton.get());
+
+    layout->addWidget(topWidget);
 
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
 
     QWidget *leftWidget = new QWidget(this);
     QVBoxLayout *leftLayout = new QVBoxLayout(leftWidget);
-
-    openButton = std::unique_ptr<QPushButton>(new QPushButton("Открыть", this));
-    openButton->setFixedSize(100, 30);
-
-    leftLayout->addWidget(openButton.get());
     leftLayout->addWidget(treeView.get());
+
     splitter->addWidget(leftWidget);
 
     QWidget *rightWidget = new QWidget(this);
     QVBoxLayout *rightLayout = new QVBoxLayout(rightWidget);
+
     splitter->addWidget(rightWidget);
 
     layout->addWidget(splitter);
-
     fileModel->setRootPath(""); // Установка корневого пути для модели
     treeView->setModel(fileModel.get());
 
@@ -58,6 +79,7 @@ Widget::Widget(QWidget *parent) :
 
     connect(openButton.get(), &QPushButton::clicked, this, &Widget::openFolder);
     connect(treeView.get(), &QTreeView::clicked, this, &Widget::openFile);
+    connect(printButton.get(), &QPushButton::clicked, this, &Widget::print);
 }
 
 Widget::~Widget()
@@ -89,7 +111,11 @@ void Widget::openFile(const QModelIndex& index)
         }
 
         //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
-       // QMessageBox::information(this, "Успешное чтение файла json", "Файл успешно прочитан: " + filePath);
+        // QMessageBox::information(this, "Успешное чтение файла json", "Файл успешно прочитан: " + filePath);
     }
 }
 
+void Widget::print()
+{
+    QMessageBox::information(this, "печать", "вызов печати");
+}
