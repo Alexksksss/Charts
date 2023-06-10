@@ -56,7 +56,7 @@ Widget::Widget(QWidget *parent) :
     header->resizeSection(3, 50); // (дата изменения)
 
     connect(openButton.get(), &QPushButton::clicked, this, &Widget::openFolder);
-    connect(treeView.get(), &QTreeView::doubleClicked, this, &Widget::openFile);
+    connect(treeView.get(), &QTreeView::clicked, this, &Widget::openFile);
 }
 
 Widget::~Widget()
@@ -77,12 +77,12 @@ void Widget::openFile(const QModelIndex& index)
     {
         QList<QMap<QString, QString>> data = sqliteFileReader->readFile(filePath);
         //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
-        QMessageBox::information(this, "Успешное чтение файла", "Файл успешно прочитан: " + filePath);
+        QMessageBox::information(this, "Успешное чтение файла sql", "Файл успешно прочитан: " + filePath);
     }
     else if (jsonFileReader)
     {
         QList<QMap<QString, QString>> data = jsonFileReader->readFile(filePath);
         //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
-        QMessageBox::information(this, "Успешное чтение файла", "Файл успешно прочитан: " + filePath);
+        QMessageBox::information(this, "Успешное чтение файла json", "Файл успешно прочитан: " + filePath);
     }
 }
