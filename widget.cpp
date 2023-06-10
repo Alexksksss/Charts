@@ -6,6 +6,7 @@
 #include <memory>
 #include <iostream>
 #include <QMessageBox>
+#include <QHeaderView>
 
 
 Widget::Widget(QWidget *parent) :
@@ -82,7 +83,13 @@ void Widget::openFile(const QModelIndex& index)
     else if (jsonFileReader)
     {
         QList<Data> data = jsonFileReader->readFile(filePath);
+        if (data.isEmpty()) {
+            QMessageBox::information(this, "Ошибка", "Список данных пуст");
+            return;
+        }
+
         //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
        // QMessageBox::information(this, "Успешное чтение файла json", "Файл успешно прочитан: " + filePath);
     }
 }
+

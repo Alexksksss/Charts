@@ -9,7 +9,7 @@
 struct Data {
 public:
     QString key;
-    QString value;
+    double value;
 };
 
 class IFileReader
