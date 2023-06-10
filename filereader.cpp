@@ -12,7 +12,7 @@ QList<QMap<QString, QString>> SqliteFileReader::readFile(const QString& filePath
     return data;
 }
 
-QList<QMap<QString, QString>> CsvFileReader::readFile(const QString& filePath)
+QList<QMap<QString, QString>> JsonFileReader::readFile(const QString& filePath)
 {
     QList<QMap<QString, QString>> data;
 

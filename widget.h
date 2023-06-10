@@ -32,7 +32,8 @@ private:
     std::unique_ptr<QTreeView> treeView;//Файлы в виде дерева
     std::unique_ptr<QFileSystemModel> fileModel;//Модель для представления файлов
     std::unique_ptr<QPushButton> openButton;//кнопка открыть
-    std::unique_ptr<SqliteFileReader> sqliteFileReader; // чтение
+    std::unique_ptr<SqliteFileReader> sqliteFileReader; // чтение sql
+    std::unique_ptr<JsonFileReader> jsonFileReader; // чтение sql
 
 };
 

@@ -18,7 +18,7 @@ public:
     QList<QMap<QString, QString>> readFile(const QString& filePath) override;
 };
 
-class CsvFileReader : public IFileReader
+class JsonFileReader : public IFileReader
 {
 public:
     QList<QMap<QString, QString>> readFile(const QString& filePath) override;

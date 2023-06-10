@@ -13,7 +13,8 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget),
     treeView(new QTreeView(this)),//при создании экземляра  они управляются родительским виджетом, поэтому не нужно умные указатели сипользовать
     fileModel(new QFileSystemModel(this)),
-    sqliteFileReader(new SqliteFileReader()) // Добавлено инициализация объекта sqliteFileReader
+    sqliteFileReader(new SqliteFileReader()), // Добавлено инициализация объекта sqliteFileReader
+    jsonFileReader(new JsonFileReader()) // Добавлено инициализация объекта json
 {
     ui->setupUi(this);
     resize(800, 600);
@@ -77,6 +78,11 @@ void Widget::openFile(const QModelIndex& index)
         QList<QMap<QString, QString>> data = sqliteFileReader->readFile(filePath);
         //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
         QMessageBox::information(this, "Успешное чтение файла", "Файл успешно прочитан: " + filePath);
-
+    }
+    else if (jsonFileReader)
+    {
+        QList<QMap<QString, QString>> data = jsonFileReader->readFile(filePath);
+        //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
+        QMessageBox::information(this, "Успешное чтение файла", "Файл успешно прочитан: " + filePath);
     }
 }
