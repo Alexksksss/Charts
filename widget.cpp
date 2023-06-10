@@ -75,14 +75,14 @@ void Widget::openFile(const QModelIndex& index)
     QString filePath = fileModel->fileInfo(index).absoluteFilePath();
     if (sqliteFileReader)
     {
-        QList<QMap<QString, QString>> data = sqliteFileReader->readFile(filePath);
+        QList<Data> data = sqliteFileReader->readFile(filePath);
         //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
-        QMessageBox::information(this, "Успешное чтение файла sql", "Файл успешно прочитан: " + filePath);
+        //QMessageBox::information(this, "Успешное чтение файла sql", "Файл успешно прочитан: " + filePath);
     }
     else if (jsonFileReader)
     {
-        QList<QMap<QString, QString>> data = jsonFileReader->readFile(filePath);
+        QList<Data> data = jsonFileReader->readFile(filePath);
         //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
-        QMessageBox::information(this, "Успешное чтение файла json", "Файл успешно прочитан: " + filePath);
+       // QMessageBox::information(this, "Успешное чтение файла json", "Файл успешно прочитан: " + filePath);
     }
 }

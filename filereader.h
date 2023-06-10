@@ -5,23 +5,30 @@
 #include <QList>
 #include <QMap>
 
+
+struct Data {
+public:
+    QString key;
+    QString value;
+};
+
 class IFileReader
 {
 public:
-    virtual QList<QMap<QString, QString>> readFile(const QString& filePath) = 0;
+    virtual QList<Data> readFile(const QString& filePath) = 0;
     virtual ~IFileReader() {}
 };
 
 class SqliteFileReader : public IFileReader
 {
 public:
-    QList<QMap<QString, QString>> readFile(const QString& filePath) override;
+    QList<Data> readFile(const QString& filePath) override;
 };
 
 class JsonFileReader : public IFileReader
 {
 public:
-    QList<QMap<QString, QString>> readFile(const QString& filePath) override;
+    QList<Data> readFile(const QString& filePath) override;
 };
 
 #endif // FILEREADER_H
