@@ -33,7 +33,8 @@ SOURCES += \
 
 HEADERS += \
         widget.h \
-    filereader.h
+    filereader.h \
+    ioc.h
 
 FORMS += \
         widget.ui
