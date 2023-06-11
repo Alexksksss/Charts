@@ -1,5 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
+#include "ioc.h"
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QFileDialog>
@@ -10,119 +11,91 @@
 #include <QComboBox>
 #include <QChartView>
 #include <QtCharts/QLineSeries>
+#include <QLabel>
 
 
-Widget::Widget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Widget),
-    treeView(new QTreeView(this)),//при создании экземляра  они управляются родительским виджетом, поэтому не нужно умные указатели сипользовать
-    fileModel(new QFileSystemModel(this)),
-    sqliteFileReader(new SqliteFileReader()), // Добавлено инициализация объекта sqliteFileReader
-    jsonFileReader(new JsonFileReader()) // Добавлено инициализация объекта json
+Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    resize(800, 300);
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    resize(800, 600);
 
-    QWidget *topWidget = new QWidget(this);
-    QHBoxLayout *topLayout = new QHBoxLayout(topWidget);
+    openButton = new QPushButton("Открыть");
+    printButton = new QPushButton("Печать");
+    checkBox = new QCheckBox("ЧБ");
+    labelType = new QLabel("Тип диаграммы");
+    comboBoxType = new QComboBox();
 
-    openButton = std::unique_ptr<QPushButton>(new QPushButton("Открыть", this));
-    openButton->setFixedSize(100, 30);
-
-    labelType = std::unique_ptr<QLabel>(new QLabel("Тип диаграммы", this));// Создание QLabel с текстом "Текст"
-
-    checkBox = std::unique_ptr<QCheckBox>(new QCheckBox("ЧБ", this));
-
-    comboBoxType = std::unique_ptr<QComboBox>(new QComboBox(this));
-    comboBoxType->addItem("Круговая");
     comboBoxType->addItem("Столбчатая");
+    comboBoxType->addItem("Круговая");
 
-    printButton = std::unique_ptr<QPushButton>(new QPushButton("Печать", this));
+    topLayout = new QHBoxLayout();
+    wrapperLayout = new QHBoxLayout();
 
-    topLayout->addWidget(openButton.get());
-    topLayout->addWidget(labelType.get(), Qt::AlignLeft);
-    topLayout->addWidget(comboBoxType.get(), Qt::AlignLeft);
-    topLayout->addWidget(checkBox.get(), Qt::AlignLeft);
-    topLayout->addWidget(printButton.get());
+    topLayout->addWidget(openButton);
+    topLayout->addWidget(labelType);
+    topLayout->addWidget(comboBoxType);
+    topLayout->addWidget(checkBox);
+    topLayout->addWidget(printButton);
 
-    layout->addWidget(topWidget);
 
-    QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
+    leftLayout = new QVBoxLayout();
+    fileSplitter = new QSplitter();
+    treeView = new QTreeView();
+    fileModel = new QFileSystemModel(this);
+    QModelIndex pathIndex = fileModel->setRootPath("");
+    treeView->setModel(fileModel);
+    treeView->setRootIndex(pathIndex);
+    fileSplitter->addWidget(treeView);
+    leftLayout->addWidget(fileSplitter);
 
-    QWidget *leftWidget = new QWidget(this);
-    QVBoxLayout *leftLayout = new QVBoxLayout(leftWidget);
-    leftLayout->addWidget(treeView.get());
 
-    splitter->addWidget(leftWidget);
+    rightLayout = new QVBoxLayout();
+    chartWidgetLayout = new QHBoxLayout();
+    chartSplitter = new QSplitter();
 
-    QWidget *rightWidget = new QWidget(this);
-    QVBoxLayout *rightLayout = new QVBoxLayout(rightWidget);
+    rightLayout->addWidget(chartSplitter);
+    rightLayout->addLayout(chartWidgetLayout);
 
-    splitter->addWidget(rightWidget);
+    wrapperLayout->addLayout(leftLayout);
+    wrapperLayout->addLayout(rightLayout);
 
-    // Добавление QChartView
-    QtCharts::QChartView *chartView = new QtCharts::QChartView(this);
-//     rightLayout->setStretchFactor(chartView,5);//потом разобраться
-    rightLayout->addWidget(chartView);
 
-    layout->addWidget(splitter);
-    fileModel->setRootPath(""); // Установка корневого пути для модели
-    treeView->setModel(fileModel.get());
+    allLayout = new QVBoxLayout();
+    allLayout->addLayout(topLayout);
+    allLayout->addLayout(wrapperLayout);
+    setLayout(allLayout);
 
-    // Установка размеров столбцов
-    QHeaderView *header = treeView->header();
-    header->setSectionResizeMode(0, QHeaderView::Interactive);
-    header->resizeSection(0, 150); // (название)
-
-    header->setSectionResizeMode(1, QHeaderView::Interactive);
-    header->resizeSection(1, 70); // (размер)
-
-    header->setSectionResizeMode(2, QHeaderView::Interactive);
-    header->resizeSection(2, 70); // (тип)
-
-    header->setSectionResizeMode(3, QHeaderView::Interactive);
-    header->resizeSection(3, 50); // (дата изменения)
-
-    connect(openButton.get(), &QPushButton::clicked, this, &Widget::openFolder);
-    connect(treeView.get(), &QTreeView::clicked, this, &Widget::openFile);
-    connect(printButton.get(), &QPushButton::clicked, this, &Widget::print);
+    connect(openButton, &QPushButton::clicked, this, &Widget::openFolder);
+    connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::OpenFile);
 }
+
+void Widget::openFolder() {
+    QFileDialog dialogWindow(this);
+    QString initialPath = "D:/Qt/testFor3";
+    dialogWindow.setDirectory(initialPath);
+    dialogWindow.setFileMode(QFileDialog::Directory);
+
+    directoryPath = dialogWindow.selectedFiles().first();
+
+    treeView->setRootIndex(fileModel->setRootPath(directoryPath));
+}
+
+void Widget::OpenFile(const QItemSelection &selected, const QItemSelection &deselected) {
+    Q_UNUSED(deselected);
+
+    QModelIndexList indexes = selected.indexes();
+    filePath = fileModel->filePath(indexes.first());
+    if (filePath.endsWith(".json")) {
+        iocContainer.RegisterInstance<IFileReader, JsonFileReader>();
+    }
+    else if (filePath.endsWith(".sqlite")) {
+        iocContainer.RegisterInstance<IFileReader, SqliteFileReader>();
+    }
+    // рисуем график
+
+}
+
 
 Widget::~Widget()
 {
-}
-
-void Widget::openFolder()
-{
-    QString folderPath = QFileDialog::getExistingDirectory(this, "Выберите папку"); // Открытие диалогового окна выбора папки
-    fileModel->setRootPath(folderPath); // Установка выбранной папки в модель
-    treeView->setRootIndex(fileModel->index(folderPath)); // Установка корневого индекса в представлении
-}
-
-void Widget::openFile(const QModelIndex& index)
-{
-    QString filePath = fileModel->fileInfo(index).absoluteFilePath();
-    if (sqliteFileReader)
-    {
-        QList<Data> data = sqliteFileReader->readFile(filePath);
-        //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
-        //QMessageBox::information(this, "Успешное чтение файла sql", "Файл успешно прочитан: " + filePath);
-    }
-    else if (jsonFileReader)
-    {
-        QList<Data> data = jsonFileReader->readFile(filePath);
-        if (data.isEmpty()) {
-            QMessageBox::information(this, "Ошибка", "Список данных пуст");
-            return;
-        }
-
-        //        std::cout << "Файл успешно прочитан: " << filePath.toStdString();
-        // QMessageBox::information(this, "Успешное чтение файла json", "Файл успешно прочитан: " + filePath);
-    }
-}
-
-void Widget::print()
-{
-    QMessageBox::information(this, "печать", "вызов печати");
 }

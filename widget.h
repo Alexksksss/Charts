@@ -10,7 +10,15 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QCheckBox>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QFileDialog>
+#include <QSplitter>
+#include <QMessageBox>
+#include <QtCharts/QChartView>
 #include "filereader.h"
+#include "chart.h"
+#include <QLabel>
 
 
 namespace Ui {
@@ -21,27 +29,51 @@ class Widget : public QWidget
 {
     Q_OBJECT
 
+private slots:
+    void openFolder(); // слот открытия
+    void OpenFile(const QItemSelection &selected, const QItemSelection &deselected);
+    //void changeChartType();
+
+   // void colorChange();
 public:
-    explicit Widget(QWidget *parent = nullptr);
+    Widget(QWidget *parent = nullptr);
     ~Widget();
 
-private slots:
-    void openFolder();//слот открытия
-    void openFile(const QModelIndex& index);
-    void print();
-
-
 private:
+
+    QString directoryPath;
+
+    QString filePath;
+
+    QFileSystemModel* fileModel;
+    QTreeView* treeView; // файлы в виде дерева
+
+    //QChartView* chartView;
+
+    QPushButton* printButton;
+    QPushButton* openButton;
+
+    QCheckBox* checkBox;
+
+    QLabel* labelType;
+
+    QComboBox* comboBoxType;
+
+    QVBoxLayout* allLayout;
+    QHBoxLayout* wrapperLayout;
+    QVBoxLayout* leftLayout;
+    QVBoxLayout* rightLayout;
+    QHBoxLayout* chartWidgetLayout;
+    QHBoxLayout* topLayout;
+
+    QSplitter* fileSplitter;
+    QSplitter* chartSplitter;
+
+    bool isShown = false;
+
+    void drawChart();
+
     std::unique_ptr<Ui::Widget> ui;
-    std::unique_ptr<QTreeView> treeView;//Файлы в виде дерева
-    std::unique_ptr<QFileSystemModel> fileModel;//Модель для представления файлов
-    std::unique_ptr<QPushButton> openButton;//кнопка открыть
-    std::unique_ptr<QPushButton> printButton;
-    std::unique_ptr<QLabel> labelType;
-    std::unique_ptr<SqliteFileReader> sqliteFileReader; // чтение sql
-    std::unique_ptr<JsonFileReader> jsonFileReader; // чтение json
-    std::unique_ptr<QComboBox> comboBoxType;
-    std::unique_ptr<QCheckBox> checkBox;
 
 };
 
