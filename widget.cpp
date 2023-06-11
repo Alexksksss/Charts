@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QHeaderView>
 #include <QComboBox>
+#include <QChartView>
+#include <QtCharts/QLineSeries>
 
 
 Widget::Widget(QWidget *parent) :
@@ -58,6 +60,11 @@ Widget::Widget(QWidget *parent) :
     QVBoxLayout *rightLayout = new QVBoxLayout(rightWidget);
 
     splitter->addWidget(rightWidget);
+
+    // Добавление QChartView
+    QtCharts::QChartView *chartView = new QtCharts::QChartView(this);
+//     rightLayout->setStretchFactor(chartView,5);//потом разобраться
+    rightLayout->addWidget(chartView);
 
     layout->addWidget(splitter);
     fileModel->setRootPath(""); // Установка корневого пути для модели
