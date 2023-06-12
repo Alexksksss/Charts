@@ -32,9 +32,9 @@ class Widget : public QWidget
 private slots:
     void openFolder(); // слот открытия
     void OpenFile(const QItemSelection &selected, const QItemSelection &deselected);
-    //void changeChartType();
+    void changeChartType();
 
-   // void colorChange();
+   void colorChange();
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
@@ -48,7 +48,7 @@ private:
     QFileSystemModel* fileModel;
     QTreeView* treeView; // файлы в виде дерева
 
-    //QChartView* chartView;
+    QChartView* chartView;
 
     QPushButton* printButton;
     QPushButton* openButton;

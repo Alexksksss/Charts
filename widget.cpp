@@ -17,12 +17,12 @@
 Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    resize(800, 600);
+    resize(1000, 600);
 
     openButton = new QPushButton("Открыть");
     printButton = new QPushButton("Печать");
-    checkBox = new QCheckBox("ЧБ");
     labelType = new QLabel("Тип диаграммы");
+    checkBox = new QCheckBox("ЧБ");
     comboBoxType = new QComboBox();
 
     comboBoxType->addItem("Столбчатая");
@@ -42,9 +42,9 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     fileSplitter = new QSplitter();
     treeView = new QTreeView();
     fileModel = new QFileSystemModel(this);
-    QModelIndex pathIndex = fileModel->setRootPath("");
     treeView->setModel(fileModel);
-    treeView->setRootIndex(pathIndex);
+
+    leftLayout->addWidget(treeView);
     fileSplitter->addWidget(treeView);
     leftLayout->addWidget(fileSplitter);
 
@@ -52,9 +52,12 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     rightLayout = new QVBoxLayout();
     chartWidgetLayout = new QHBoxLayout();
     chartSplitter = new QSplitter();
+    chartView = new QChartView();
 
-    rightLayout->addWidget(chartSplitter);
+    chartWidgetLayout->addWidget(chartView);
     rightLayout->addLayout(chartWidgetLayout);
+    chartSplitter->addWidget(chartView);
+    rightLayout->addWidget(chartSplitter);
 
     wrapperLayout->addLayout(leftLayout);
     wrapperLayout->addLayout(rightLayout);
@@ -65,19 +68,38 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     allLayout->addLayout(wrapperLayout);
     setLayout(allLayout);
 
+    QHeaderView *header = treeView->header();
+    header->setSectionResizeMode(0, QHeaderView::Interactive);
+    header->resizeSection(0, 200); // (название)
+
+    header->setSectionResizeMode(1, QHeaderView::Interactive);
+    header->resizeSection(1, 70); // (размер)
+
+    header->setSectionResizeMode(2, QHeaderView::Interactive);
+    header->resizeSection(2, 70); // (тип)
+
+    header->setSectionResizeMode(3, QHeaderView::Interactive);
+    header->resizeSection(3, 50); // (дата изменения)
+
     connect(openButton, &QPushButton::clicked, this, &Widget::openFolder);
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::OpenFile);
+    connect(comboBoxType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Widget::changeChartType);
+    connect(checkBox, &QCheckBox::toggled, this, &Widget::colorChange);
 }
 
-void Widget::openFolder() {
+void Widget::openFolder()
+{
     QFileDialog dialogWindow(this);
     QString initialPath = "D:/Qt/testFor3";
     dialogWindow.setDirectory(initialPath);
     dialogWindow.setFileMode(QFileDialog::Directory);
 
-    directoryPath = dialogWindow.selectedFiles().first();
-
-    treeView->setRootIndex(fileModel->setRootPath(directoryPath));
+    if (dialogWindow.exec())
+    {
+        directoryPath = dialogWindow.selectedFiles().first();
+        fileModel->setRootPath(directoryPath);
+        treeView->setRootIndex(fileModel->index(directoryPath));
+    }
 }
 
 void Widget::OpenFile(const QItemSelection &selected, const QItemSelection &deselected) {
@@ -91,11 +113,61 @@ void Widget::OpenFile(const QItemSelection &selected, const QItemSelection &dese
     else if (filePath.endsWith(".sqlite")) {
         iocContainer.RegisterInstance<IFileReader, SqliteFileReader>();
     }
+    if (comboBoxType->currentText() == "Круговая") {
+        iocContainer.RegisterInstance<IChart, PieChart>();
+        isShown = true;
+    }
+    else if (comboBoxType->currentText() == "Столбчатая") {
+        iocContainer.RegisterInstance<IChart, BarChart>();
+        isShown = true;
+    }
     // рисуем график
-
+    if (isShown) {
+        drawChart();
+    }
+}
+void Widget::changeChartType()
+{
+    if (comboBoxType->currentText() == "Круговая")
+        iocContainer.RegisterInstance<IChart, PieChart>();
+    else if (comboBoxType->currentText() == "Столбчатая")
+        iocContainer.RegisterInstance<IChart, BarChart>();
+    if (isShown)
+        drawChart();
 }
 
+void Widget::colorChange()
+{
+    if (isShown)
+        drawChart();
+}
+
+void Widget::drawChart()
+{
+    auto chart = iocContainer.GetObject<IChart>();
+    auto dataStructure = iocContainer.GetObject<IFileReader>();
+
+    QList<Data> items = dataStructure->readFile(filePath);
+    chart->drawChart(items, checkBox->isChecked());
+
+    chartView->setChart(chart->getChart());
+}
 
 Widget::~Widget()
 {
+    delete openButton;
+    delete printButton;
+    delete checkBox;
+    delete comboBoxType;
+    delete chartView;
+    delete chartSplitter;
+    delete chartWidgetLayout;
+    delete rightLayout;
+    delete treeView;
+    delete fileSplitter;
+    delete leftLayout;
+    delete fileModel;
+    delete topLayout;
+    delete wrapperLayout;
+    delete allLayout;
 }
