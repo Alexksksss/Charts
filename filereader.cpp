@@ -9,7 +9,7 @@
 #include <QJsonArray>
 #include <QJsonValue>
 
-QList<Data> SqliteFileReader::readFile(const QString& filePath)
+QList<Data> SqliteFileReader::readFile(QString filePath)
 {
     QSqlDatabase dbase = QSqlDatabase::addDatabase("QSQLITE"); //создаем соединение по умолчанию с драйвером "QSQLITE"
     // устанавливаем связь
@@ -20,7 +20,8 @@ QList<Data> SqliteFileReader::readFile(const QString& filePath)
         // делаем запрос
         QSqlQuery query ("SELECT * FROM " + dbase.tables().takeFirst());
         int i = 0; // счетчик данных
-        while (query.next()) { // пока не кончатся данные с запроса
+        while (query.next() && i < 5) { // пока не кончатся данные с запроса
+
             i++;
             // задаем стркутуру
             Data temp{query.value(0).toString(), query.value(1).toDouble()};
@@ -36,11 +37,12 @@ QList<Data> SqliteFileReader::readFile(const QString& filePath)
     return data;
 }
 
-QList<Data> JsonFileReader::readFile(const QString& filePath)
+QList<Data> JsonFileReader::readFile(QString filePath)
 {
     QString val;
-    QFile file(filePath);
-
+    QFile file;
+    file.setFileName(filePath);
+    QList<Data> data;
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QMessageBox::information(nullptr, "Ошибка", "Ошибка в чтении файла: " );
         return QList<Data>();  // Возвращаем пустой список при ошибке чтения файла
@@ -50,16 +52,19 @@ QList<Data> JsonFileReader::readFile(const QString& filePath)
     file.close();
 
     QJsonDocument doc = QJsonDocument::fromJson(val.toUtf8());
+
     QJsonObject jsonObject = doc.object();
-    QStringList keys = jsonObject.keys();
-    QList<Data> data;
 
-    for (const QString& key : keys) {
+    QStringList keys (jsonObject.keys());
+    int i = 0;
+    QListIterator<QString> iterator(keys);
+    while (iterator.hasNext() && i < 5) {
+        QString key = iterator.next();
         double value = jsonObject.value(key).toDouble();
-        Data temp {key, value};
-        data.push_back(temp);
+        Data string{key, value};
+        data.push_back(string);
+        i++;
     }
-
     if (!data.isEmpty()) {
         QMessageBox::information(nullptr, "Успешное чтение файла", "Файл прочитан: " + data[0].key);
     } else {

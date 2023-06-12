@@ -15,20 +15,20 @@ public:
 class IFileReader
 {
 public:
-    virtual QList<Data> readFile(const QString& filePath) = 0;
+    virtual QList<Data> readFile(const QString) = 0;
     virtual ~IFileReader() {}
 };
 
 class SqliteFileReader : public IFileReader
 {
 public:
-    QList<Data> readFile(const QString& filePath) override;
+    QList<Data> readFile(QString) override;
 };
 
 class JsonFileReader : public IFileReader
 {
 public:
-    QList<Data> readFile(const QString& filePath) override;
+    QList<Data> readFile(QString) override;
 };
 
 #endif // FILEREADER_H
