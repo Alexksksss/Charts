@@ -20,7 +20,7 @@ QList<Data> SqliteFileReader::readFile(QString filePath)
         // делаем запрос
         QSqlQuery query ("SELECT * FROM " + dbase.tables().takeFirst());
         int i = 0; // счетчик данных
-        while (query.next() && i < 5) { // пока не кончатся данные с запроса
+        while (query.next() && i < 100) { // пока не кончатся данные с запроса
 
             i++;
             // задаем стркутуру
@@ -29,10 +29,9 @@ QList<Data> SqliteFileReader::readFile(QString filePath)
             data.push_back(temp);
         }
     }
-    else {
+    else
         QMessageBox::information(nullptr, "Ошибка", "Ошибка в чтении файла: " );
-    }
-    QMessageBox::information(nullptr, "Успешное чтение файла", "файл прочитан: " +  data[0].key);//пока для проверки пусть так будет (выводится ключ первого элемента)
+    //QMessageBox::information(nullptr, "Успешное чтение файла", "файл прочитан: " +  data[0].key);//пока для проверки пусть так будет (выводится ключ первого элемента)
 
     return data;
 }
@@ -58,16 +57,15 @@ QList<Data> JsonFileReader::readFile(QString filePath)
     QStringList keys (jsonObject.keys());
     int i = 0;
     QListIterator<QString> iterator(keys);
-    while (iterator.hasNext() && i < 5) {
+    while (iterator.hasNext() && i < 100) {
         QString key = iterator.next();
         double value = jsonObject.value(key).toDouble();
         Data string{key, value};
         data.push_back(string);
         i++;
     }
-    if (!data.isEmpty()) {
-        QMessageBox::information(nullptr, "Успешное чтение файла", "Файл прочитан: " + data[0].key);
-    } else {
+    if (data.isEmpty()) {
+        //QMessageBox::information(nullptr, "Успешное чтение файла", "Файл прочитан: " + data[0].key);
         QMessageBox::information(nullptr, "Ошибка", "Список данных пуст");
     }
 
