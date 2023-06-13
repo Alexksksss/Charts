@@ -153,6 +153,11 @@ void Widget::drawChart()
     auto dataStructure = iocContainer.GetObject<IFileReader>();
 
     QList<Data> items = dataStructure->readFile(filePath);
+    if (items.isEmpty()) {
+        //qDebug() << "Ошибка: отсутствуют данные для построения графика.";
+        isShown = false;
+        return;
+    }
     chart->drawChart(items, checkBox->isChecked());
 
     chartView->setChart(chart->getChart());
