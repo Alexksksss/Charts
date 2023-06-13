@@ -112,6 +112,10 @@ void Widget::OpenFile(const QItemSelection &selected, const QItemSelection &dese
     else if (filePath.endsWith(".sqlite")) {
         iocContainer.RegisterInstance<IFileReader, SqliteFileReader>();
     }
+    else{
+        QMessageBox::information(nullptr, "Ошибка", "Неподдерживаемый формат файла");
+        return;
+    }
     if (comboBoxType->currentText() == "Круговая") {
         iocContainer.RegisterInstance<IChart, PieChart>();
         isShown = true;
@@ -171,7 +175,7 @@ void Widget::print() {
         painter.end();
     }
     else {
-        //если нечего печатать
+        QMessageBox::information(nullptr, "Ошибка", "Файл не выбран");
     }
 }
 
