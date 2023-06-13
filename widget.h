@@ -19,6 +19,7 @@
 #include "filereader.h"
 #include "chart.h"
 #include <QLabel>
+#include <QPdfWriter>
 
 
 namespace Ui {
@@ -33,8 +34,8 @@ private slots:
     void openFolder(); // слот открытия
     void OpenFile(const QItemSelection &selected, const QItemSelection &deselected);
     void changeChartType();
-
-   void colorChange();
+    void colorChange();
+    void print();
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();

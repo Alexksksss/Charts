@@ -85,6 +85,8 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::OpenFile);
     connect(comboBoxType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Widget::changeChartType);
     connect(checkBox, &QCheckBox::toggled, this, &Widget::colorChange);
+    connect(printButton, &QPushButton::clicked, this, &Widget::print);
+
 }
 
 void Widget::openFolder()
@@ -152,6 +154,30 @@ void Widget::drawChart()
 
     chartView->setChart(chart->getChart());
 }
+
+void Widget::print() {
+    if(isShown){
+        QFileDialog *fileDialog = new QFileDialog(this);
+
+        fileDialog->setDirectory("");
+        fileDialog->setAcceptMode(QFileDialog::AcceptSave);
+
+        QStringList fileNames;
+        if(fileDialog->exec())
+            fileNames = fileDialog->selectedFiles();
+
+        QPdfWriter pdfWriter(fileNames.first() + ".pdf");
+
+        QPainter painter(&pdfWriter);
+
+        chartView->render(&painter);
+        painter.end();
+    }
+    else {
+        //если нечего печатать
+    }
+}
+
 
 Widget::~Widget()
 {
