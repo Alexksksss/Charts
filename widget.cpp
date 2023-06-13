@@ -17,8 +17,9 @@
 Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    resize(1000, 600);
+    resize(1000, 600);//установка размера
 
+    //все верхние атрибуты
     openButton = std::make_unique<QPushButton>("Открыть",this);
     printButton = std::make_unique<QPushButton>("Печать",this);
     labelType = std::make_unique<QLabel>("Тип диаграммы",this);
@@ -31,6 +32,7 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     topLayout = std::make_unique<QHBoxLayout>();
     wrapperLayout = std::make_unique<QHBoxLayout>();
 
+    //добавляем все верхние разположения
     topLayout->addWidget(openButton.get());
     topLayout->addWidget(labelType.get());
     topLayout->addWidget(comboBoxType.get());
@@ -40,10 +42,10 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     leftLayout = std::make_unique<QVBoxLayout>();
     fileSplitter = std::make_unique<QSplitter>();
     treeView = std::make_unique<QTreeView>();
-    fileModel = std::make_unique<QFileSystemModel>(this);
+    fileModel = std::make_unique<QFileSystemModel>(this);//установка модели
     treeView->setModel(fileModel.get());
 
-    leftLayout->addWidget(treeView.get());
+    leftLayout->addWidget(treeView.get());//установка расположения для левого
     fileSplitter->addWidget(treeView.get());
     leftLayout->addWidget(fileSplitter.get());
 
@@ -52,20 +54,20 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     chartSplitter = std::make_unique<QSplitter>();
     chartView = std::make_unique<QChartView>();
 
-    chartWidgetLayout->addWidget(chartView.get());
+    chartWidgetLayout->addWidget(chartView.get());//установка расположения для правого
     rightLayout->addLayout(chartWidgetLayout.get());
     chartSplitter->addWidget(chartView.get());
     rightLayout->addWidget(chartSplitter.get());
 
-    wrapperLayout->addLayout(leftLayout.get());
+    wrapperLayout->addLayout(leftLayout.get());//левый+правый
     wrapperLayout->addLayout(rightLayout.get());
 
-    allLayout = std::make_unique<QVBoxLayout>();
+    allLayout = std::make_unique<QVBoxLayout>();//общий
     allLayout->addLayout(topLayout.get());
     allLayout->addLayout(wrapperLayout.get());
     setLayout(allLayout.get());
 
-    QHeaderView *header = treeView->header();
+    QHeaderView *header = treeView->header();//установка минимального размера колонок в treeView
     header->setSectionResizeMode(0, QHeaderView::Interactive);
     header->resizeSection(0, 200); // (название)
 
@@ -78,34 +80,34 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     header->setSectionResizeMode(3, QHeaderView::Interactive);
     header->resizeSection(3, 50); // (дата изменения)
 
-    connect(openButton.get(), &QPushButton::clicked, this, &Widget::openFolder);
-    connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::OpenFile);
-    connect(comboBoxType.get(), QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Widget::changeChartType);
-    connect(checkBox.get(), &QCheckBox::toggled, this, &Widget::colorChange);
-    connect(printButton.get(), &QPushButton::clicked, this, &Widget::print);
+    connect(openButton.get(), &QPushButton::clicked, this, &Widget::openFolder);//кнопка открыть-> открытие проводника
+    connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::OpenFile);//нажатие на файл-> загрузка данных
+    connect(comboBoxType.get(), QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Widget::changeChartType);//выбор комбобокса-> изменение вида графика
+    connect(checkBox.get(), &QCheckBox::toggled, this, &Widget::colorChange);//выбор чекбокса-> перерисовка графика
+    connect(printButton.get(), &QPushButton::clicked, this, &Widget::print);//кнопка печать-> открытие проводника для сохранения
 }
 
 
 void Widget::openFolder()
 {
     QFileDialog dialogWindow(this);
-    QString initialPath = "D:/Qt/testFor3";
+    QString initialPath = "D:/Qt/testFor3";//начальная папка (заменить на проверке)
     dialogWindow.setDirectory(initialPath);
-    dialogWindow.setFileMode(QFileDialog::Directory);
+    dialogWindow.setFileMode(QFileDialog::Directory);//чтобы видно было только папки
 
-    if (dialogWindow.exec())
+    if (dialogWindow.exec())//было ли окно закрыто
     {
         directoryPath = dialogWindow.selectedFiles().first();
-        fileModel->setRootPath(directoryPath);
-        treeView->setRootIndex(fileModel->index(directoryPath));
+        fileModel->setRootPath(directoryPath);//устанавливаем корень модели
+        treeView->setRootIndex(fileModel->index(directoryPath));//устанавливаем корень вида
     }
 }
 
-void Widget::OpenFile(const QItemSelection &selected, const QItemSelection &deselected) {
-    Q_UNUSED(deselected);
+void Widget::OpenFile(const QItemSelection &selected, const QItemSelection &deselected) {//выделенные и снятые с выделения файлы
+    Q_UNUSED(deselected);//для компилятора, чтобы не жаловался на неиспользуемые
 
     QModelIndexList indexes = selected.indexes();
-    filePath = fileModel->filePath(indexes.first());
+    filePath = fileModel->filePath(indexes.first());//извлечение пути файла (первый, если несколько выделили, чтобы не крашнулось)
     if (filePath.endsWith(".json")) {
         iocContainer.RegisterInstance<IFileReader, JsonFileReader>();
     }
@@ -158,21 +160,21 @@ void Widget::drawChart()
 
 void Widget::print() {
     if(isShown){
-        QFileDialog *fileDialog = new QFileDialog(this);
+        QFileDialog *fileDialog = new QFileDialog(this);//создаем диалоговое окно выбора файла
 
-        fileDialog->setDirectory("");
-        fileDialog->setAcceptMode(QFileDialog::AcceptSave);
+        fileDialog->setDirectory("");//пустая начальная директория
+        fileDialog->setAcceptMode(QFileDialog::AcceptSave);//режим сохраения
 
-        QStringList fileNames;
+        QStringList fileNames;//имена
         if(fileDialog->exec())
             fileNames = fileDialog->selectedFiles();
 
-        QPdfWriter pdfWriter(fileNames.first() + ".pdf");
+        QPdfWriter pdfWriter(fileNames.first() + ".pdf");//создаем объект для записи в пдф
 
-        QPainter painter(&pdfWriter);
+        QPainter painter(&pdfWriter);//создаем объект рисовая
 
-        chartView->render(&painter);
-        painter.end();
+        chartView->render(&painter);//рисуем chartView в пдф
+        painter.end();//завершаем рисование
     }
     else {
         QMessageBox::information(nullptr, "Ошибка", "Файл не выбран");
