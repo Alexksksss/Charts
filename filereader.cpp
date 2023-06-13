@@ -29,10 +29,11 @@ QList<Data> SqliteFileReader::readFile(QString filePath)
             data.push_back(temp);
         }
     }
-    else
+    else{
         QMessageBox::information(nullptr, "Ошибка", "Ошибка в чтении файла: " );
-    //QMessageBox::information(nullptr, "Успешное чтение файла", "файл прочитан: " +  data[0].key);//пока для проверки пусть так будет (выводится ключ первого элемента)
-
+        return QList<Data>();  // Возвращаем пустой список при ошибке чтения файла
+        //QMessageBox::information(nullptr, "Успешное чтение файла", "файл прочитан: " +  data[0].key);//пока для проверки пусть так будет (выводится ключ первого элемента)
+    }
     return data;
 }
 
@@ -67,6 +68,7 @@ QList<Data> JsonFileReader::readFile(QString filePath)
     if (data.isEmpty()) {
         //QMessageBox::information(nullptr, "Успешное чтение файла", "Файл прочитан: " + data[0].key);
         QMessageBox::information(nullptr, "Ошибка", "Список данных пуст");
+        return QList<Data>();
     }
 
     return data;

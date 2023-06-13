@@ -1,14 +1,18 @@
 #include "chart.h"
 
 void BarChart::drawChart(QList<Data> data, bool isGray) {
+    // количество данных
+    int length = data.count();
+    if(length==0){
+        return;
+    }
     // диаграмма
     QChart* chart = getChart();
 
     chart->setTitle("BarChart");
 
     QBarSeries *series = new QBarSeries(chart);
-    // количество данных
-    int length = data.count();
+
     for (int i = 0; i < length; i++) {
         QBarSet* barSet = new QBarSet(data.at(i).key);
         * barSet << data.at(i).value;
@@ -28,15 +32,19 @@ void BarChart::drawChart(QList<Data> data, bool isGray) {
 }
 
 void PieChart::drawChart(QList<Data> list, bool isGrey) {
-    // диаграмма
-    QChart* chart = getChart();
-    // заголовок
-    chart->setTitle("PieChart");
-    QPieSeries * pieSeries = new QPieSeries(chart);
     // количество данных
     int length = list.count();
     if (length > 10)
         length = 10;
+    if (length == 0)
+        return;
+    // диаграмма
+    QChart* chart = getChart();
+    // заголовок
+    chart->setTitle("PieChart");
+
+    QPieSeries * pieSeries = new QPieSeries(chart);
+
     for (int i = 0; i < length; i++) {
         QPieSlice* slice = pieSeries->append(list.at(i).key, list.at(i).value);
         if (isGrey)
