@@ -19,54 +19,51 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     ui->setupUi(this);
     resize(1000, 600);
 
-    openButton = new QPushButton("Открыть");
-    printButton = new QPushButton("Печать");
-    labelType = new QLabel("Тип диаграммы");
-    checkBox = new QCheckBox("ЧБ");
-    comboBoxType = new QComboBox();
+    openButton = std::make_unique<QPushButton>("Открыть",this);
+    printButton = std::make_unique<QPushButton>("Печать",this);
+    labelType = std::make_unique<QLabel>("Тип диаграммы",this);
+    checkBox = std::make_unique<QCheckBox>("ЧБ",this);
+    comboBoxType = std::make_unique<QComboBox>(this);
 
     comboBoxType->addItem("Столбчатая");
     comboBoxType->addItem("Круговая");
 
-    topLayout = new QHBoxLayout();
-    wrapperLayout = new QHBoxLayout();
+    topLayout = std::make_unique<QHBoxLayout>();
+    wrapperLayout = std::make_unique<QHBoxLayout>();
 
-    topLayout->addWidget(openButton);
-    topLayout->addWidget(labelType);
-    topLayout->addWidget(comboBoxType);
-    topLayout->addWidget(checkBox);
-    topLayout->addWidget(printButton);
+    topLayout->addWidget(openButton.get());
+    topLayout->addWidget(labelType.get());
+    topLayout->addWidget(comboBoxType.get());
+    topLayout->addWidget(checkBox.get());
+    topLayout->addWidget(printButton.get());
 
+    leftLayout = std::make_unique<QVBoxLayout>();
+    fileSplitter = std::make_unique<QSplitter>();
+    treeView = std::make_unique<QTreeView>();
+    fileModel = std::make_unique<QFileSystemModel>(this);
+    treeView->setModel(fileModel.get());
 
-    leftLayout = new QVBoxLayout();
-    fileSplitter = new QSplitter();
-    treeView = new QTreeView();
-    fileModel = new QFileSystemModel(this);
-    treeView->setModel(fileModel);
+    leftLayout->addWidget(treeView.get());
+    fileSplitter->addWidget(treeView.get());
+    leftLayout->addWidget(fileSplitter.get());
 
-    leftLayout->addWidget(treeView);
-    fileSplitter->addWidget(treeView);
-    leftLayout->addWidget(fileSplitter);
+    rightLayout = std::make_unique<QVBoxLayout>();
+    chartWidgetLayout = std::make_unique<QHBoxLayout>();
+    chartSplitter = std::make_unique<QSplitter>();
+    chartView = std::make_unique<QChartView>();
 
+    chartWidgetLayout->addWidget(chartView.get());
+    rightLayout->addLayout(chartWidgetLayout.get());
+    chartSplitter->addWidget(chartView.get());
+    rightLayout->addWidget(chartSplitter.get());
 
-    rightLayout = new QVBoxLayout();
-    chartWidgetLayout = new QHBoxLayout();
-    chartSplitter = new QSplitter();
-    chartView = new QChartView();
+    wrapperLayout->addLayout(leftLayout.get());
+    wrapperLayout->addLayout(rightLayout.get());
 
-    chartWidgetLayout->addWidget(chartView);
-    rightLayout->addLayout(chartWidgetLayout);
-    chartSplitter->addWidget(chartView);
-    rightLayout->addWidget(chartSplitter);
-
-    wrapperLayout->addLayout(leftLayout);
-    wrapperLayout->addLayout(rightLayout);
-
-
-    allLayout = new QVBoxLayout();
-    allLayout->addLayout(topLayout);
-    allLayout->addLayout(wrapperLayout);
-    setLayout(allLayout);
+    allLayout = std::make_unique<QVBoxLayout>();
+    allLayout->addLayout(topLayout.get());
+    allLayout->addLayout(wrapperLayout.get());
+    setLayout(allLayout.get());
 
     QHeaderView *header = treeView->header();
     header->setSectionResizeMode(0, QHeaderView::Interactive);
@@ -81,13 +78,13 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
     header->setSectionResizeMode(3, QHeaderView::Interactive);
     header->resizeSection(3, 50); // (дата изменения)
 
-    connect(openButton, &QPushButton::clicked, this, &Widget::openFolder);
+    connect(openButton.get(), &QPushButton::clicked, this, &Widget::openFolder);
     connect(treeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &Widget::OpenFile);
-    connect(comboBoxType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Widget::changeChartType);
-    connect(checkBox, &QCheckBox::toggled, this, &Widget::colorChange);
-    connect(printButton, &QPushButton::clicked, this, &Widget::print);
-
+    connect(comboBoxType.get(), QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Widget::changeChartType);
+    connect(checkBox.get(), &QCheckBox::toggled, this, &Widget::colorChange);
+    connect(printButton.get(), &QPushButton::clicked, this, &Widget::print);
 }
+
 
 void Widget::openFolder()
 {
@@ -181,19 +178,4 @@ void Widget::print() {
 
 Widget::~Widget()
 {
-    delete openButton;
-    delete printButton;
-    delete checkBox;
-    delete comboBoxType;
-    delete chartView;
-    delete chartSplitter;
-    delete chartWidgetLayout;
-    delete rightLayout;
-    delete treeView;
-    delete fileSplitter;
-    delete leftLayout;
-    delete fileModel;
-    delete topLayout;
-    delete wrapperLayout;
-    delete allLayout;
 }

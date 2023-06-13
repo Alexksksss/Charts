@@ -43,33 +43,23 @@ public:
 private:
 
     QString directoryPath;
-
     QString filePath;
-
-    QFileSystemModel* fileModel;
-    QTreeView* treeView; // файлы в виде дерева
-
-    QChartView* chartView;
-
-    QPushButton* printButton;
-    QPushButton* openButton;
-
-    QCheckBox* checkBox;
-
-    QLabel* labelType;
-
-    QComboBox* comboBoxType;
-
-    QVBoxLayout* allLayout;
-    QHBoxLayout* wrapperLayout;
-    QVBoxLayout* leftLayout;
-    QVBoxLayout* rightLayout;
-    QHBoxLayout* chartWidgetLayout;
-    QHBoxLayout* topLayout;
-
-    QSplitter* fileSplitter;
-    QSplitter* chartSplitter;
-
+    std::unique_ptr<QFileSystemModel> fileModel;
+    std::unique_ptr<QTreeView> treeView; // файлы в виде дерева
+    std::unique_ptr<QChartView> chartView;
+    std::unique_ptr<QPushButton> printButton;
+    std::unique_ptr<QPushButton> openButton;
+    std::unique_ptr<QCheckBox> checkBox;
+    std::unique_ptr<QLabel> labelType;
+    std::unique_ptr<QComboBox> comboBoxType;
+    std::unique_ptr<QVBoxLayout> allLayout;
+    std::unique_ptr<QHBoxLayout> wrapperLayout;
+    std::unique_ptr<QVBoxLayout> leftLayout;
+    std::unique_ptr<QVBoxLayout> rightLayout;
+    std::unique_ptr<QHBoxLayout> chartWidgetLayout;
+    std::unique_ptr<QHBoxLayout> topLayout;
+    std::unique_ptr<QSplitter> fileSplitter;
+    std::unique_ptr<QSplitter> chartSplitter;
     bool isShown = false;
 
     void drawChart();
