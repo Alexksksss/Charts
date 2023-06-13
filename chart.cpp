@@ -35,6 +35,8 @@ void PieChart::drawChart(QList<Data> list, bool isGrey) {
     QPieSeries * pieSeries = new QPieSeries(chart);
     // количество данных
     int length = list.count();
+    if (length > 10)
+        length = 10;
     for (int i = 0; i < length; i++) {
         QPieSlice* slice = pieSeries->append(list.at(i).key, list.at(i).value);
         if (isGrey)
