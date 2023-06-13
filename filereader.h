@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QList>
-#include <QMap>
 
 //собственная структура
 struct Data {

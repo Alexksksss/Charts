@@ -16,10 +16,11 @@
 #include <QSplitter>
 #include <QMessageBox>
 #include <QtCharts/QChartView>
+#include <QLabel>
+#include <QHeaderView>
+#include <QPdfWriter>
 #include "filereader.h"
 #include "chart.h"
-#include <QLabel>
-#include <QPdfWriter>
 
 
 namespace Ui {

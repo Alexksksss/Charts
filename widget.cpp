@@ -1,17 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include "ioc.h"
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QFileDialog>
-#include <memory>
-#include <iostream>
-#include <QMessageBox>
-#include <QHeaderView>
-#include <QComboBox>
-#include <QChartView>
-#include <QtCharts/QLineSeries>
-#include <QLabel>
 
 
 Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
@@ -154,7 +143,6 @@ void Widget::drawChart()
 
     QList<Data> items = dataStructure->readFile(filePath);
     if (items.isEmpty()) {
-        //qDebug() << "Ошибка: отсутствуют данные для построения графика.";
         isShown = false;
         return;
     }
