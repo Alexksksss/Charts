@@ -80,7 +80,7 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget)
 void Widget::openFolder()
 {
     QFileDialog dialogWindow(this);
-    QString initialPath = "D:/Qt/testFor3";//начальная папка (заменить на проверке)
+    QString initialPath = "";//начальная папка (заменить на проверке)
     dialogWindow.setDirectory(initialPath);
     dialogWindow.setFileMode(QFileDialog::Directory);//чтобы видно было только папки
 

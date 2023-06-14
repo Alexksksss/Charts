@@ -20,8 +20,8 @@ void BarChart::createChartTitle() {
 
 void BarChart::createChartSeries(QList<Data> data, bool isGray) {
     int length = data.count();
-        if(length==0)
-            return;
+    if(length==0)
+        return;
     QBarSeries* series = new QBarSeries(chart);
 
     for (int i = 0; i< length; i++) {
@@ -36,14 +36,12 @@ void BarChart::createChartSeries(QList<Data> data, bool isGray) {
 
         series->append(barSet);
     }
-
-//    chart->removeAllSeries();
     removeSeries();
-      chart->addSeries(series);
+    chart->addSeries(series);
 }
 
 void BarChart::customizeChart() {
-    chart->createDefaultAxes();
+    chart->createDefaultAxes();// Создает оси для диаграммы на основе ряда, который уже был добавлен в диаграмму.
 }
 
 void BarChart::removeSeries(){
@@ -72,12 +70,10 @@ void PieChart::createChartSeries(QList<Data> data, bool isGray) {
         if (isGray) {
             int gray = (rand() % 255);
             slice->setBrush(QColor(gray, gray, gray));
-        } else {
+        } else
             slice->setBrush(QColor(rand() % 255, rand() % 255, rand() % 255));
-        }
     }
 
-//    chart->removeAllSeries();
     removeSeries();
     chart->addSeries(pieSeries);
 }
