@@ -8,9 +8,9 @@ QChart* IChart::getChart() {
     return chart;
 }
 
-void IChart::drawChart(QList<Data> data, bool isGray) {
+void IChart::drawChart(QList<Data> data, bool isGray, int limit) {
     createChartTitle();
-    createChartSeries(data, isGray);
+    createChartSeries(data, isGray, limit);
     customizeChart();
 }
 
@@ -18,8 +18,10 @@ void BarChart::createChartTitle() {
     chart->setTitle("BarChart");
 }
 
-void BarChart::createChartSeries(QList<Data> data, bool isGray) {
+void BarChart::createChartSeries(QList<Data> data, bool isGray, int limit) {
     int length = data.count();
+    if (length > limit)
+        length = limit;
     if(length==0)
         return;
     QBarSeries* series = new QBarSeries(chart);
@@ -53,12 +55,12 @@ void PieChart::createChartTitle() {
 }
 
 
-void PieChart::createChartSeries(QList<Data> data, bool isGray) {
+void PieChart::createChartSeries(QList<Data> data, bool isGray, int limit) {
     QPieSeries* pieSeries = new QPieSeries(chart);
 
     int length = data.count();
-    if (length > 10)
-        length = 10;
+    if (length > limit)
+        length = limit;
     if(length == 0)
         return;
 

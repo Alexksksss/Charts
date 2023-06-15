@@ -64,6 +64,7 @@ private:
     bool isShown = false;//есть ли сейчас график в виджете
 
     void drawChart();//функция рисовки
+    int limit = 10;
 
     std::unique_ptr<Ui::Widget> ui;//сам интерфейс
 

@@ -146,21 +146,23 @@ void Widget::drawChart()
         isShown = false;
         return;
     }
-    chart->drawChart(items, checkBox->isChecked());
+    chart->drawChart(items, checkBox->isChecked(), limit);
 
     chartView->setChart(chart->getChart());
 }
 
 void Widget::print() {
     if(isShown){
-        QFileDialog *fileDialog = new QFileDialog(this);//создаем диалоговое окно выбора файла
+       // QFileDialog *fileDialog = new QFileDialog(this);//создаем диалоговое окно выбора файла
 
-        fileDialog->setDirectory("");//пустая начальная директория
-        fileDialog->setAcceptMode(QFileDialog::AcceptSave);//режим сохраения
+        QFileDialog fileDialog;
+
+        fileDialog.setDirectory("");//пустая начальная директория
+        fileDialog.setAcceptMode(QFileDialog::AcceptSave);//режим сохраения
 
         QStringList fileNames;//имена
-        if(fileDialog->exec())
-            fileNames = fileDialog->selectedFiles();
+        if(fileDialog.exec())
+            fileNames = fileDialog.selectedFiles();
 
         QPdfWriter pdfWriter(fileNames.first() + ".pdf");//создаем объект для записи в пдф
 
