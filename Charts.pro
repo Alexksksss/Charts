@@ -4,7 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui charts
+QT += sql
+QT += charts
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,10 +28,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        widget.cpp
+        widget.cpp \
+    filereader.cpp \
+    chart.cpp
 
 HEADERS += \
-        widget.h
+        widget.h \
+    filereader.h \
+    ioc.h \
+    chart.h
 
 FORMS += \
         widget.ui
